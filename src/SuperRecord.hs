@@ -60,7 +60,7 @@ import Data.Aeson.Types (Parser)
 import Data.Constraint
 import Data.Proxy
 import Data.Typeable
-import GHC.Base (Int(..))
+import GHC.Base (Int(..), Any)
 import GHC.Generics
 import GHC.IO ( IO(..) )
 import GHC.OverloadedLabels
@@ -97,7 +97,7 @@ data FldProxy (t :: Symbol)
     deriving (Show, Read, Eq, Ord, Typeable)
 
 instance l ~ l' => IsLabel (l :: Symbol) (FldProxy l') where
-    fromLabel _ = FldProxy
+    fromLabel = FldProxy
 
 -- | The core record type.
 data Rec (lts :: [*])
@@ -578,12 +578,14 @@ instance ToNative cs lts => ToNative (D1 m cs) lts where
 instance ToNative cs lts => ToNative (C1 m cs) lts where
     toNative' xs = M1 $ toNative' xs
 
+{-
 instance
     (Has name lts t)
     => ToNative (S1 ('MetaSel ('Just name) p s l) (Rec0 t)) lts
     where
     toNative' r =
         M1 $ K1 (get (FldProxy :: FldProxy name) r)
+d-}
 
 instance
     ( ToNative l lts
